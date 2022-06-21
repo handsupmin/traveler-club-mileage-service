@@ -9,16 +9,4 @@ const connection = mysql.createConnection({
   database: dbConfig.database,
 });
 
-function getAllUsers(callback) {
-  connection.query(
-    `SELECT * FROM user ORDER BY user_id DESC`,
-    (err, rows, fields) => {
-      if (err) throw err;
-      callback(rows);
-    }
-  );
-}
-
-module.exports = {
-  getAllUsers,
-};
+module.exports = {};

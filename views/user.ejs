@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>user</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <h1>user</h1>
+    <input type="button" value="new user" />
+    <table border="1">
+      <tr>
+        <th>user</th>
+        <th>point</th>
+        <th>edit</th>
+      </tr>
+      <% rows.forEach((row, index) => { %>
+      <tr>
+        <td><%=row.user_id%></td>
+        <td><%=row.point%></td>
+        <td>
+          <input type="button" value="edit" />
+          <input type="button" value="del" />
+        </td>
+      </tr>
+      <% }) %>
+    </table>
+  </body>
+</html>

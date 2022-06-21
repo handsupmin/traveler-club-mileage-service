@@ -3,22 +3,11 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-var models = require("./models/index.js");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 
 var app = express();
-
-models.sequelize
-  .sync()
-  .then(() => {
-    console.log("DB 연결 성공");
-  })
-  .catch((err) => {
-    console.log("DB 연결 실패");
-    console.log(err);
-  });
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -31,6 +20,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
+app.use("/user", indexRouter);
 app.use("/users", usersRouter);
 
 // catch 404 and forward to error handler

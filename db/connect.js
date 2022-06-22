@@ -1,7 +1,7 @@
 var mysql = require("mysql");
 var dbConfig = require("../config/db-config.json");
 
-const connection = mysql.createConnection({
+var connection = mysql.createConnection({
   host: dbConfig.host,
   port: dbConfig.port,
   user: dbConfig.user,
@@ -9,4 +9,223 @@ const connection = mysql.createConnection({
   database: dbConfig.database,
 });
 
-module.exports = {};
+function getReview(reviewId, callback) {
+  connection.query("SELECT * FROM review WHERE review_id = ?", [
+    reviewId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다."); 
+    } else {
+      callback(rows);
+    }
+  });
+}
+
+function getUserReview(userId, placeId, callback) {
+  connection.query("SELECT * FROM review WHERE user_id = ? AND place_id = ?", [
+    userId, placeId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다."); 
+    } else {
+      callback(rows);
+    }
+  });
+}
+
+function getUser(userId, callback) {
+  connection.query("SELECT * FROM user WHERE user_id = ?", [
+    userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다."); 
+    } else {
+      callback(rows);
+    }
+  });
+}
+
+function getPhoto(attachedPhotoId, callback) {
+  connection.query("SELECT * FROM photo WHERE photo_id = ?", [
+    attachedPhotoId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다."); 
+    } else {
+      callback(rows);
+    }
+  });
+}
+
+function getUserPhoto(userId, placeId, callback) {
+  connection.query("SELECT * FROM photo WHERE user_id = ? AND place_id = ?", [
+    userId, placeId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다."); 
+    } else {
+      callback(rows);
+    }
+  });
+}
+
+function getPlace(placeId, callback) {
+  connection.query("SELECT * FROM place WHERE place_id = ?", [
+    placeId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다."); 
+    } else {
+      callback(rows);
+    }
+  });
+}
+
+function insertReview(reviewId, userId, placeId, content) {
+  connection.query("INSERT INTO review (review_id, user_id, place_id, content) VALUES (?, ?, ?, ?)", [
+    reviewId, userId, placeId, content
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function insertUser(userId) {
+  connection.query("INSERT INTO user (user_id, point) VALUES (?, 0)", [
+    userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function insertPhoto(attachedPhotoId, placeId, userId) {
+  connection.query("INSERT INTO photo (photo_id, place_id, user_id) VALUES (?, ?, ?)", [
+    attachedPhotoId, placeId, userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function insertPlace(placeId, userId) {
+  connection.query("INSERT INTO place (place_id, first_review_user_id) VALUES (?, ?)", [
+    placeId, userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function insertPointLog(reviewId, userId, placeId, point, bonusPoint, userPoint) {
+  connection.query("INSERT INTO point_log (review_id, user_id, place_id, point, bonus_point, total_point, write_date) VALUES (?, ?, ?, ?, ?, ?, NOW())", [
+    reviewId, userId, placeId, point, bonusPoint, userPoint
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function updateReviewContent(reviewId, content) {
+  connection.query("UPDATE review SET content = ? WHERE review_id = ?", [
+    content, reviewId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function updateUserPoint(userId, point) {
+  connection.query("UPDATE user SET point = ? WHERE user_id = ?", [
+    point, userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function updatePlaceFirstReviewUserId(placeId, firstReviewUserId) {
+  connection.query("UPDATE place SET first_review_user_id = ? WHERE place_id = ?", [
+    firstReviewUserId, placeId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function deleteReview(reviewId) {
+  connection.query("DELETE FROM review WHERE review_id = ?", [
+    reviewId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function deletePhoto(attachedPhotoId, placeId, userId) {
+  connection.query("DELETE FROM photo WHERE photo_id = ?, place_id = ?, user_id = ?", [
+    attachedPhotoId, placeId, userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    }
+  });
+}
+
+function countAttachedPhoto(attachedPhotoIds, placeId, userId, callback) {
+  connection.query("SELECT count(*) AS photo_count FROM photo WHERE photo_id IN (?), place_id = ?, user_id = ?", [
+    attachedPhotoIds.toString(), placeId, userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    } else {
+      callback(rows)
+    }
+  });
+}
+
+module.exports = {
+  getReview,
+  getUserReview,
+  getUser,
+  getPhoto,
+  getUserPhoto,
+  getPlace,
+  insertReview,
+  insertUser,
+  insertPhoto,
+  insertPlace,
+  insertPointLog,
+  updateReviewContent,
+  updateUserPoint,
+  updatePlaceFirstReviewUserId,
+  deleteReview,
+  deletePhoto,
+  countAttachedPhoto
+}

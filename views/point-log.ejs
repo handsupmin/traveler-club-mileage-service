@@ -1,0 +1,11 @@
+"data" = [<% rows.forEach((row)=>{ %>
+  {
+    "reviewId": "<%=row.review_id%>",
+    "userId": "<%=row.user_id%>",
+    "placeId": "<%=row.place_id%>",
+    "point": "<%=row.point%>",
+    "bonusPoint": "<%=row.bonus_point%>",
+    "totalPoint": "<%=row.total_point%>",
+    "writeDate": "<%=row.write_date%>"
+  },<% }) %>
+]

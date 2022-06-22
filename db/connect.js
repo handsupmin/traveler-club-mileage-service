@@ -87,6 +87,19 @@ function getPlace(placeId, callback) {
   });
 }
 
+function getPointLog(userId, callback) {
+  connection.query("SELECT * FROM point_log WHERE user_id = ?", [
+    userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다."); 
+    } else {
+      callback(rows);
+    }
+  });
+}
+
 function insertReview(reviewId, userId, placeId, content) {
   connection.query("INSERT INTO review (review_id, user_id, place_id, content) VALUES (?, ?, ?, ?)", [
     reviewId, userId, placeId, content
@@ -217,6 +230,7 @@ module.exports = {
   getPhoto,
   getUserPhoto,
   getPlace,
+  getPointLog,
   insertReview,
   insertUser,
   insertPhoto,

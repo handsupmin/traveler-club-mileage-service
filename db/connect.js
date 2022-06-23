@@ -48,9 +48,9 @@ function getUser(userId, callback) {
   });
 }
 
-function getPhoto(attachedPhotoId, callback) {
-  connection.query("SELECT * FROM photo WHERE photo_id = ?", [
-    attachedPhotoId
+function getPhoto(reviewId, placeId, userId, callback) {
+  connection.query("SELECT * FROM photo WHERE review_id = ? AND place_id = ? AND user_id = ?", [
+    reviewId, placeId, userId
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
@@ -122,9 +122,9 @@ function insertUser(userId) {
   });
 }
 
-function insertPhoto(attachedPhotoId, placeId, userId) {
-  connection.query("INSERT INTO photo (photo_id, place_id, user_id) VALUES (?, ?, ?)", [
-    attachedPhotoId, placeId, userId
+function insertPhoto(attachedPhotoId, reviewId, placeId, userId) {
+  connection.query("INSERT INTO photo (photo_id, review_id, place_id, user_id) VALUES (?, ?, ?, ?)", [
+    attachedPhotoId, reviewId, placeId, userId
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
@@ -188,6 +188,23 @@ function updatePlaceFirstReviewUserId(placeId, firstReviewUserId) {
   });
 }
 
+function updatePhoto(attachedPhotoIds, reviewId, placeId, userId, callback) {
+  connection.query("DELETE FROM photo WHERE review_id = ? AND place_id = ? AND user_id = ?", [
+    reviewId, placeId, userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    } else {
+      if (attachedPhotoIds != null) {
+        attachedPhotoIds.forEach((element) => (insertPhoto(element, reviewId, placeId, userId)));
+      };
+    }
+
+    callback();
+  });
+}
+
 function deleteReview(reviewId) {
   connection.query("DELETE FROM review WHERE review_id = ?", [
     reviewId
@@ -199,9 +216,9 @@ function deleteReview(reviewId) {
   });
 }
 
-function deletePhoto(attachedPhotoId, placeId, userId) {
-  connection.query("DELETE FROM photo WHERE photo_id = ?, place_id = ?, user_id = ?", [
-    attachedPhotoId, placeId, userId
+function deletePhoto(attachedPhotoId, reviewid, placeId, userId) {
+  connection.query("DELETE FROM photo WHERE photo_id = ? AND review_id = ? AND place_id = ? AND user_id = ?", [
+    attachedPhotoId, reviewid, placeId, userId
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
@@ -210,9 +227,22 @@ function deletePhoto(attachedPhotoId, placeId, userId) {
   });
 }
 
-function countAttachedPhoto(attachedPhotoIds, placeId, userId, callback) {
-  connection.query("SELECT count(*) AS photo_count FROM photo WHERE photo_id IN (?), place_id = ?, user_id = ?", [
-    attachedPhotoIds.toString(), placeId, userId
+function deleteAllPhotos(reviewid, placeId, userId, callback) {
+  connection.query("DELETE FROM photo WHERE review_id = ? AND place_id = ? AND user_id = ?", [
+    reviewid, placeId, userId
+  ], (err, rows, fields) => {
+    if(err){
+      console.log(err);
+      console.log("쿼리문에 오류가 있습니다.");
+    } else {
+      callback(rows)
+    }
+  });
+}
+
+function countAttachedPhoto(attachedPhotoIds, reviewId, placeId, userId, callback) {
+  connection.query("SELECT count(*) AS photo_count FROM photo WHERE photo_id IN (?) AND review_id = ? AND place_id = ? AND user_id = ?", [
+    attachedPhotoIds.toString(), reviewId, placeId, userId
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
@@ -239,7 +269,9 @@ module.exports = {
   updateReviewContent,
   updateUserPoint,
   updatePlaceFirstReviewUserId,
+  updatePhoto,
   deleteReview,
   deletePhoto,
+  deleteAllPhotos,
   countAttachedPhoto
 }

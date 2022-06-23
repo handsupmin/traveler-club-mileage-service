@@ -69,7 +69,7 @@ router.post("/", function (req, res, next) {
           dbConnection.insertReview(reviewId, userId, placeId, content);
 
           if (attachedPhotoIds != null) {
-            attachedPhotoIds.forEach((element) => (dbConnection.insertPhoto(element, placeId, userId)))
+            attachedPhotoIds.forEach((element) => (dbConnection.insertPhoto(element, reviewId, placeId, userId)))
           }
 
           dbConnection.getUser(userId, (rows) => {
@@ -84,7 +84,7 @@ router.post("/", function (req, res, next) {
                 dbConnection.insertPlace(placeId, userId);
                 isFirstReview = true;
               } else if (rows.length == 1 && isNullOrEmpty(rows[0].first_review_user_id)) {
-                dbConnection.updatePlaceFirstReviewUserId(userId);
+                dbConnection.updatePlaceFirstReviewUserId(placeId, userId);
                 isFirstReview = true;
               }
 
@@ -116,6 +116,8 @@ router.post("/", function (req, res, next) {
       dbConnection.getUser(userId, (rows) => {
         if (rows.length == 0) {
           next(new Error("해당 사용자가 없습니다."));
+        } else {
+          userPoint = rows[0].point;
         }
       });
 
@@ -130,6 +132,19 @@ router.post("/", function (req, res, next) {
           next(new Error("작성된 리뷰가 없습니다."));
         } else {
           dbConnection.updateReviewContent(reviewId, content);
+          if (attachedPhotoIds != null) {
+            dbConnection.updatePhoto(attachedPhotoIds, reviewId, placeId, userId, () => {
+              dbConnection.countAttachedPhoto(attachedPhotoIds, reviewId, placeId, userId, (rows) => {
+                if (rows[0].photo_count == 0) {
+                  point -= 1;
+                  userPoint += point;
+                  dbConnection.updateUserPoint(userId, userPoint);
+                  dbConnection.insertPointLog(reviewId, userId, placeId, point, bonusPoint, userPoint);
+                }
+              });
+            })
+          }
+
           res.render("result", { detail: "리뷰 수정 완료" });
         }
       });
@@ -148,59 +163,37 @@ router.post("/", function (req, res, next) {
         }
       });
 
-      if (attachedPhotoIds != null) {
-        dbConnection.getReview(reviewId, (rows) => {
-          if (rows.length == 0) {
-            next(new Error("작성된 리뷰가 없습니다."));
-          } else {
-            dbConnection.deleteReview(reviewId);
-            dbConnection.getPlace(placeId, (rows) => {
-              if (rows[0].first_review_user_id == userId) {
-                dbConnection.updatePlaceFirstReviewUserId(null);
-                bonusPoint = -1;
-              }
+      dbConnection.getReview(reviewId, (rows) => {
+        if (rows.length == 0) {
+          next(new Error("작성된 리뷰가 없습니다."));
+        } else {
+          dbConnection.deleteReview(reviewId);
+          dbConnection.getPlace(placeId, (rows) => {
+            if (rows[0].first_review_user_id == userId) {
+              dbConnection.updatePlaceFirstReviewUserId(placeId, null);
+              bonusPoint = -1;
+            }
 
-              point = -1;
-              userPoint += point + bonusPoint;
-              dbConnection.updateUserPoint(userId, userPoint);
-              dbConnection.insertPointLog(reviewId, userId, placeId, point, bonusPoint, userPoint);
-
-              res.render("result", { detail: "리뷰 삭제 완료" });
-            })
-          }
-        });
-      } else {
-        dbConnection.getReview(reviewId, (rows) => {
-          if (rows.length == 0) {
-            next(new Error("작성된 리뷰가 없습니다."));
-          } else {
-            attachedPhotoIds.forEach((element) => {
-              dbConnection.deletePhoto(element, placeId, userId);
-            });
-
-            dbConnection.countAttachedPhoto(attachedPhotoIds, placeId, userId, (rows) => {
-              if (rows[0].photo_count == 0) {
-                point -= 1;
-              }
-
-              dbConnection.deleteReview(reviewId);
-              dbConnection.getPlace(placeId, (rows) => {
-                if (rows[0].first_review_user_id == userId) {
-                  dbConnection.updatePlaceFirstReviewUserId(null);
-                  bonusPoint = -1;
-                }
-
-                point -= 1;
+            dbConnection.getPhoto(reviewId, placeId, userId, (rows) => {
+              if (rows.length == 0) {
+                point = -1;
                 userPoint += point + bonusPoint;
                 dbConnection.updateUserPoint(userId, userPoint);
                 dbConnection.insertPointLog(reviewId, userId, placeId, point, bonusPoint, userPoint);
-
                 res.render("result", { detail: "리뷰 삭제 완료" });
-              });
-            });
-          }
-        });
-      }
+              } else {
+                dbConnection.deleteAllPhotos(reviewId, placeId, userId, () => {
+                  point = -2;
+                  userPoint += point + bonusPoint;
+                  dbConnection.updateUserPoint(userId, userPoint);
+                  dbConnection.insertPointLog(reviewId, userId, placeId, point, bonusPoint, userPoint);
+                  res.render("result", { detail: "리뷰 삭제 완료" });
+                })
+              }
+            })
+          })
+        }
+      });
     } else {
       new Error("사용하지 않는 action입니다.");
     }

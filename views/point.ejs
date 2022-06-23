@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>포인트 조회</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>사용자 포인트 조회</h1>
+    <table border='1'>
+      <tr>
+        <th>Review Id</th>
+        <th>User Id</th>
+        <th>Place Id</th>
+        <th>Point</th>
+        <th>Bonus Point</th>
+        <th>Total Point</th>
+        <th>Write Date</th>
+      </tr>
+      <% rows.forEach((row, index)=>{ %>
+        <tr>
+          <td><%=row.review_id%></td>
+          <td><%=row.user_id%></td>
+          <td><%=row.place_id%></td>
+          <td><%=row.point%></td>
+          <td><%=row.bonus_point%></td>
+          <td><%=row.total_point%></td>
+          <td><%=row.write_date%></td>
+        </tr>
+      <% }) %>
+    </table>
+  </body>
+</html>

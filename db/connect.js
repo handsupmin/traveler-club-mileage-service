@@ -15,7 +15,7 @@ function getReview(reviewId, callback) {
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
-      console.log("쿼리문에 오류가 있습니다."); 
+      console.log("쿼리문에 오류가 있습니다.");
     } else {
       callback(rows);
     }
@@ -28,7 +28,7 @@ function getUserReview(userId, placeId, callback) {
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
-      console.log("쿼리문에 오류가 있습니다."); 
+      console.log("쿼리문에 오류가 있습니다.");
     } else {
       callback(rows);
     }
@@ -41,7 +41,7 @@ function getUser(userId, callback) {
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
-      console.log("쿼리문에 오류가 있습니다."); 
+      console.log("쿼리문에 오류가 있습니다.");
     } else {
       callback(rows);
     }
@@ -54,7 +54,7 @@ function getPhoto(attachedPhotoId, callback) {
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
-      console.log("쿼리문에 오류가 있습니다."); 
+      console.log("쿼리문에 오류가 있습니다.");
     } else {
       callback(rows);
     }
@@ -67,7 +67,7 @@ function getUserPhoto(userId, placeId, callback) {
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
-      console.log("쿼리문에 오류가 있습니다."); 
+      console.log("쿼리문에 오류가 있습니다.");
     } else {
       callback(rows);
     }
@@ -80,7 +80,7 @@ function getPlace(placeId, callback) {
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
-      console.log("쿼리문에 오류가 있습니다."); 
+      console.log("쿼리문에 오류가 있습니다.");
     } else {
       callback(rows);
     }
@@ -93,7 +93,7 @@ function getPointLog(userId, callback) {
   ], (err, rows, fields) => {
     if(err){
       console.log(err);
-      console.log("쿼리문에 오류가 있습니다."); 
+      console.log("쿼리문에 오류가 있습니다.");
     } else {
       callback(rows);
     }

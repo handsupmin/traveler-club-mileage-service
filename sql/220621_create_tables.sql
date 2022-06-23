@@ -23,7 +23,7 @@ CREATE TABLE `pointravel`.`photo` (
   `place_id` varchar(36) NOT NULL,
   `user_id` varchar(36) NOT NULL,
   PRIMARY KEY (`photo_index`));
-  
+
 CREATE TABLE `pointravel`.`point_log` (
   `log_id` INT NOT NULL AUTO_INCREMENT,
   `review_id` VARCHAR(36) NOT NULL,
